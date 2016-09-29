@@ -16,12 +16,17 @@ const compiler = webpack({
       {
         test: /\.purs$/,
         loader: 'purs-loader',
-        exclude:[ /node_modules/ ],
         query: {
             psc: 'psa',
+            pscIde: true,
             src: [ 'bower_components/purescript-*/src/**/*.purs', 
                    'src/client/*.purs' ],
-        }
+        },
+      },
+      {
+        test: /\.js$/,
+        loader: 'source-map-loader',
+        exclude: [/node_modules/, /bower_components/]
       }
     ],
   },
@@ -41,14 +46,14 @@ function compileDist(cb) {
 
 void function Main() {
   const [_, __, flag] = process.argv
-  compileDist((err, stats) =>{
+  compileDist((err, stats) => {
     if (err) {
       console.log(err)
     }
 
     if (flag === '-d' || flag === '--debug') {
       console.log(stats)
-      console.log(stats.compilation.errors)
+      console.log(stats.compilation.errors ? stats.compilation.errors : '\n')
     }
   })
 }()
