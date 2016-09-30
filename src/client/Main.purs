@@ -1,49 +1,41 @@
 module Main where
 
-import Data.Void
-import Data.Tuple
-import Data.Either
+import Prelude
 
-import Control.Bind
-import Control.Monad.Eff
+import Control.Monad.Eff (Eff)
 
-import DOM
+import Halogen as H
+import Halogen.HTML.Events.Indexed as HE
+import Halogen.HTML.Indexed as HH
+import Halogen.Util (runHalogenAff, awaitBody)
 
-import Data.DOM.Simple.Document
-import Data.DOM.Simple.Element
-import Data.DOM.Simple.Types
-import Data.DOM.Simple.Window
+type State = { on :: Boolean }
 
-import Halogen
-import Halogen.Signal
-import Halogen.Component
+initialState :: State
+initialState = { on: false }
 
-import qualified Halogen.HTML as H
-import qualified Halogen.HTML.Attributes as A
-import qualified Halogen.HTML.Events as A
+data Query a = ToggleState a
 
-appendToBody :: forall eff. HTMLElement -> Eff (dom :: DOM | eff) Unit
-appendToBody e = document globalWindow >>= (body >=> flip appendChild e)
-
--- | The state of the application
-newtype State = State { on :: Boolean }
-
--- | Inputs to the state machine
-data Input = ToggleState
-
-ui :: forall m eff. (Applicative m) => Component m Input Input
-ui = render <$> stateful (State { on: false }) update
+ui :: forall g. H.Component State Query g
+ui = H.component { render, eval }
   where
-  render :: State -> H.HTML (m Input)
-  render (State s) = H.div_
-    [ H.h1_ [ H.text "Toggle Button" ]
-    , H.button [ A.onClick (A.input_ ToggleState) ] 
-               [ H.text (if s.on then "On" else "Off") ]
-    ]    
-      
-  update :: State -> Input -> State
-  update (State s) ToggleState = State { on: not s.on }
 
-main = do
-  Tuple node _ <- runUI ui
-  appendToBody node
+  render :: State -> H.ComponentHTML Query
+  render state =
+    HH.div_
+      [ HH.h1_
+          [ HH.text "Toggle Button" ]
+      , HH.button
+          [ HE.onClick (HE.input_ ToggleState) ]
+          [ HH.text (if state.on then "On" else "Off") ]
+      ]
+
+  eval :: Query ~> H.ComponentDSL State Query g
+  eval (ToggleState next) = do
+    H.modify (\state -> { on: not state.on })
+    pure next
+
+main :: Eff (H.HalogenEffects ()) Unit
+main = runHalogenAff do
+  body <- awaitBody
+  H.runUI ui initialState body

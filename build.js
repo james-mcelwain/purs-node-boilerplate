@@ -56,7 +56,7 @@ void function Main() {
       console.log(chalk.blue(chalk.bold('Webpack Stats:\n')))
       console.log(stats)
 
-      if (stats.compilation.errors) {
+      if (stats.compilation.errors.length > 0) {
         console.log('\n\n')
         console.log(chalk.red(chalk.bold('Errors:\n')))
         stats.compilation.errors.filter(x => x).forEach(error=> {
