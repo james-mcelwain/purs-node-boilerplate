@@ -1,5 +1,6 @@
-const path = require('path')
+/* eslint-disblae no-console */
 const webpack = require('webpack')
+const chalk = require('chalk')
 
 const compiler = webpack({
   entry: [ './src/client/entry.js' ],
@@ -45,15 +46,27 @@ function compileDist(cb) {
 
 
 void function Main() {
-  const [_, __, flag] = process.argv
+  const [_, __, flag] = process.argv // eslint-disable no-unused-vars
   compileDist((err, stats) => {
     if (err) {
       console.log(err)
     }
 
     if (flag === '-d' || flag === '--debug') {
+      console.log(chalk.blue(chalk.bold('Webpack Stats:\n')))
       console.log(stats)
-      console.log(stats.compilation.errors ? stats.compilation.errors : '\n')
+
+      if (stats.compilation.errors) {
+        console.log('\n\n')
+        console.log(chalk.red(chalk.bold('Errors:\n')))
+        stats.compilation.errors.filter(x => x).forEach(error=> {
+          if (typeof error === 'string') {
+            console.log(error)
+          } else if (typeof error === 'object') {
+            // PASS
+          }
+        })
+      }
     }
   })
 }()
