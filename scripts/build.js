@@ -1,6 +1,6 @@
 /* eslint-disblae no-console */
 const chalk = require('chalk')
-const compileDist = require('./webpack')
+const compileDist = require('./webpack').compileDist
 
 void function Main() {
   let [_, __, flag] = process.argv // eslint-disable no-unused-vars

@@ -43,4 +43,4 @@ function compileDist(cb) {
   })
 }
 
-module.exports = compileDist
+module.exports = { compileDist, compiler }
