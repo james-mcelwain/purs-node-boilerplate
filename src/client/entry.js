@@ -1,1 +1,1 @@
-require('./Main.purs')
+require('./Main.purs').main()
