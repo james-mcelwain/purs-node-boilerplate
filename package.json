@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node ./src/server/index",
     "build": "node ./scripts/build",
-    "build:debug": "node ./scripts/build -d"
+    "build:debug": "node ./scripts/build -d",
+    "watch": "node ./scripts/watch"
   },
   "author": "",
   "license": "ISC",
